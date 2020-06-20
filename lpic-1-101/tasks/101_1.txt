@@ -1,4 +1,4 @@
-Перед выполнением заданий важно самостоятельно повторить шаги, выполняемые на уроке.
+-------------Перед выполнением заданий важно самостоятельно повторить шаги, выполняемые на уроке------------------------
 
 1) Просмотреть информацию о процессоре и модулях оперативной памяти.
 2) Определить модель жесткого диска.
@@ -6,7 +6,228 @@
 4) Отключить звуковую карту.
 5) Выключить контроллер usb.
 
-Решение:
+-------------Решение:-------------------------------------------------------------------------------------------------------
+0) Подготовка репозитория на github
+$ git status
+$ git add *
 $ git commit -m "first commit"
-$ git remote add origin https://github.com/kozharskiy-vitaliy/LPIC-1-101.git
-$ git push -u origin master 
+$ git push https://github.com/kozharskiy-vitaliy/LPIC-1-101.git
+
+1) Просмотреть информацию о процессоре и модулях оперативной памяти.
+
+********************************************************************************
+[vagrant@centos7 proc]$ cat /proc/cpuinfo
+
+processor       : 0
+vendor_id       : GenuineIntel
+cpu family      : 6
+model           : 37
+model name      : Intel(R) Core(TM) i3 CPU       M 330  @ 2.13GHz
+stepping        : 2
+microcode       : 0x616
+cpu MHz         : 2128.376
+cache size      : 3072 KB
+physical id     : 0
+siblings        : 1
+core id         : 0
+cpu cores       : 1
+apicid          : 0
+initial apicid  : 0
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 11
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc eagerfpu pni monitor ssse3 cx16 sse4_1 sse4_2 x2apic popcnt hypervisor lahf_lm flush_l1d
+bogomips        : 4256.75
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 36 bits physical, 48 bits virtual
+power management:
+
+*********************************************************************************************************
+[vagrant@centos7 proc]$ free -h
+              total        used        free      shared  buff/cache   available
+Mem:           235M         55M        5.3M        1.3M        173M        169M
+Swap:          2.0G         32M        2.0G
+
+[vagrant@centos7 proc]$ cat /proc/meminfo
+MemTotal:         240644 kB
+MemFree:            6296 kB
+MemAvailable:     173652 kB
+Buffers:               0 kB
+Cached:           153912 kB
+SwapCached:         3156 kB
+Active:            41356 kB
+Inactive:         121268 kB
+Active(anon):       1548 kB
+Inactive(anon):     8524 kB
+Active(file):      39808 kB
+Inactive(file):   112744 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+SwapTotal:       2097148 kB
+SwapFree:        2063404 kB
+Dirty:                 0 kB
+Writeback:             0 kB
+AnonPages:          7528 kB
+Mapped:            10340 kB
+Shmem:              1360 kB
+Slab:              46400 kB
+SReclaimable:      23440 kB
+SUnreclaim:        22960 kB
+KernelStack:        1552 kB
+PageTables:         3944 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     2217468 kB
+Committed_AS:     275944 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:        4732 kB
+VmallocChunk:   34359731068 kB
+Percpu:              164 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:         0 kB
+CmaTotal:              0 kB
+CmaFree:               0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:       40896 kB
+DirectMap2M:      221184 kB
+
+***********************************************************************************
+
+2) Определить модель жесткого диска.
+
+[vagrant@centos7 ~]$ lsblk
+NAME   MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+sda      8:0    0  40G  0 disk
+└─sda1   8:1    0  40G  0 part /
+
+В Linux все отображается в файловом виде, в том числе и устройства. Все подключённые к операционной системе Linux устройства размещаются в каталоге /dev/ здесь вы найдете микрофоны, камеры, жёсткие диски, флешки, одним словом, все внешние и внутренние устройства.
+
+Жёсткие диски имеют особенные названия. В зависимости от интерфейса, через который подключён жёсткий диск, название может начинаться на:
+
+sd - устройство, подключённое по SCSI;
+hd - устройство ATA;
+vd - виртуальное устройство;
+mmcblk - обозначаются флешки, подключённые через картридер;
+
+В наше время большинство блочных устройств Linux подключаются через интерфейс SCSI. Сюда входят жёсткие диски, USB-флешки, даже ATA-диски теперь тоже подключаются к SCSI через специальный переходник. Поэтому в большинстве случаев вы будете иметь дело именно с дисками sd.
+
+Третья буква в имени диска означает его порядковый номер в системе. Используется алфавитная система. Например sda - первый диск, sdb - второй диск, sdc - третий и так далее. Дальше следует цифра - это номер раздела на диске - sda1, sda2.
+
+Самый простой способ увидеть все подключённые диски - это посмотреть содержимое каталога /dev/ и отфильтровать устройства sd:
+
+Посмотреть подключённые диски с выводом информации о размере и свободном пространстве можно с помощью утилиты df:
+
+ df -h
+
+ Здесь отображается уже подробная информация. Но вы можете узнать ещё больше с помощью команды lsblk:
+
+  DF — не является утилитой для разметки разделов, скорее больше для просмотра информации. Можно отметить то, что утилита DF способна вывести информацию о файловых системах, которые даже не являются реальными разделами диска.
+
+$ df -h
+***************************************************************************************************
+[vagrant@centos7 ~]$ sudo parted -l
+Model: ATA VBOX HARDDISK (scsi)
+Disk /dev/sda: 42.9GB
+Sector size (logical/physical): 512B/512B
+Partition Table: msdos
+Disk Flags:
+
+Number  Start   End     Size    Type     File system  Flags
+ 1      1049kB  42.9GB  42.9GB  primary  xfs          boot
+
+----------------------------------------------------------------------------------------------------
+3) Вывести сведения обо всех платах расширения на шине PCIEx.
+
+[vagrant@centos7 ~]$ uname -a
+
+Linux centos7 3.10.0-1127.8.2.el7.x86_64 #1 SMP Tue May 12 16:57:42 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux
+
+*********************************************************************************
+[vagrant@centos7 ~]$ cat /etc/os-release
+
+NAME="CentOS Linux"
+VERSION="7 (Core)"
+ID="centos"
+ID_LIKE="rhel fedora"
+VERSION_ID="7"
+PRETTY_NAME="CentOS Linux 7 (Core)"
+ANSI_COLOR="0;31"
+CPE_NAME="cpe:/o:centos:centos:7"
+HOME_URL="https://www.centos.org/"
+BUG_REPORT_URL="https://bugs.centos.org/"
+
+CENTOS_MANTISBT_PROJECT="CentOS-7"
+CENTOS_MANTISBT_PROJECT_VERSION="7"
+REDHAT_SUPPORT_PRODUCT="centos"
+REDHAT_SUPPORT_PRODUCT_VERSION="7"
+
+******************************************************************
+[vagrant@centos7 ~]$ lspci
+
+00:00.0 Host bridge: Intel Corporation 440FX - 82441FX PMC [Natoma] (rev 02)
+00:01.0 ISA bridge: Intel Corporation 82371SB PIIX3 ISA [Natoma/Triton II]
+00:01.1 IDE interface: Intel Corporation 82371AB/EB/MB PIIX4 IDE (rev 01)
+00:02.0 VGA compatible controller: InnoTek Systemberatung GmbH VirtualBox Graphics Adapter
+00:03.0 Ethernet controller: Intel Corporation 82540EM Gigabit Ethernet Controller (rev 02)
+00:04.0 System peripheral: InnoTek Systemberatung GmbH VirtualBox Guest Service
+00:05.0 Multimedia audio controller: Intel Corporation 82801AA AC'97 Audio Controller (rev 01)
+00:07.0 Bridge: Intel Corporation 82371AB/EB/MB PIIX4 ACPI (rev 08)
+00:08.0 Ethernet controller: Intel Corporation 82540EM Gigabit Ethernet Controller (rev 02)
+
+----------------------------------------------------------------------------------------------------
+4) Отключить звуковую карту.
+
+[vagrant@centos7 ~]$ lsmod | grep -i snd
+snd_intel8x0           38199  0
+snd_ac97_codec        130479  1 snd_intel8x0
+ac97_bus               12730  1 snd_ac97_codec
+snd_pcm               101339  2 snd_ac97_codec,snd_intel8x0
+snd_timer              34110  1 snd_pcm
+snd                    83987  4 snd_ac97_codec,snd_intel8x0,snd_timer,snd_pcm
+soundcore              15047  1 snd
+
+*******************************************************************
+[vagrant@centos7 ~]$ sudo rmmod snd_intel8x0
+[vagrant@centos7 ~]$ sudo rmmod snd_ac97_codec
+[vagrant@centos7 ~]$ sudo rmmod ac97_bus
+[vagrant@centos7 ~]$ sudo rmmod snd_pcm
+[vagrant@centos7 ~]$ sudo rmmod snd_timer
+[vagrant@centos7 ~]$ sudo rmmod snd
+[vagrant@centos7 ~]$ sudo rmmod soundcore
+
+Следующий шаг, занесение отключённых модулей ядра в "чёрный список", чтобы они не грузились при загрузке ОС, записав их в файл /etc/modprobe.d/snd-bkaclist.conf:
+
+blacklist soundcore
+blacklist snd
+blacklist snd_pcm
+blacklist snd_pcsp
+blacklist pcspkr
+
+Это можно сделать через команду echo:
+
+# touch /etc/modprobe.d/snd-blacklist.conf
+# cd /etc/modprobe.d/
+# echo ‘blacklist soundcore’ >> snd-blacklist.conf
+# echo ‘blacklist snd’ >> snd-blacklist.conf
+# echo ‘blacklist snd_pcm’ >> snd-blacklist.conf
+# echo ‘blacklist snd_pcsp’ >> snd-blacklist.conf
+# echo ‘blacklist pcspkr’ >> snd-blacklist.conf
+
+------------------------------------------------------------------------------
+5) Выключить контроллер usb.
+
+Чтобы отключить USB-накопитель, вам необходимо создать файл .conf и отредактировать его с помощью текстового редактора.
+
+# vim /etc/modprobe.d/usb-storage.conf
+Введите следующие строки в файл:
+
+install usb-storage /bin/true
+
+
